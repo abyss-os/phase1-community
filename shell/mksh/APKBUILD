@@ -1,0 +1,49 @@
+# Maintainer: Haelwenn (lanodan) Monnier <contact+abyss@hacktivis.me>
+pkgname=mksh
+pkgver=57
+_pkgver=R$pkgver
+pkgrel=0
+pkgdesc="MirBSD Korn Shell"
+# do not move to HTTPS as it's a TLSv1.0 host and will take time to update
+url="http://mirbsd.de/mksh"
+arch="all"
+license="BSD"
+depends=""
+depends_dev=""
+makedepends=""
+checkdepends="perl ed"
+install=""
+subpackages="$pkgname-doc"
+source="http://www.mirbsd.org/MirOS/dist/mir/mksh/$pkgname-$_pkgver.tgz"
+builddir="$srcdir/$pkgname"
+
+prepare() {
+	default_prepare
+
+	cd "$buildir"
+
+	# Broken testcase when ran as root
+	sed -i check.t -e '/^name: xxx-stat-1$/,/^---$/d'
+}
+
+build() {
+	cd "$buildir"
+
+	export LDSTATIC="-static"
+
+	sh Build.sh -r
+}
+
+check() {
+	cd "$buildir"
+	./test.sh -v
+}
+
+package() {
+	cd "$buildir"
+	install -Dm755 mksh "$pkgdir"/bin/mksh
+	install -Dm644 mksh.1 "$pkgdir"/usr/share/man/man1/mksh.1
+	install -Dm644 dot.mkshrc "$pkgdir"/usr/share/doc/mksh/dot.mkshrc
+}
+
+sha512sums="7d7fa557c17da4f1f62f82877a136439efb6d4f9fde52b2df39214db09868982e756df6e4fe83498f9013cbcf3252dc383b00ddfafaa4c9f143ffded7cd255b3  mksh-R57.tgz"
