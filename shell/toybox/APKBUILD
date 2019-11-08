@@ -1,0 +1,34 @@
+# Maintainer: Haelwenn (lanodan) Monnier <contact+abyss@hacktivis.me>
+pkgname="toybox"
+pkgver="0.8.2"
+pkgrel=0
+pkgdesc="Common linux commands in a multicall binary"
+url="https://www.landley.net/toybox/"
+arch="all"
+license="BSD-2"
+depends=""
+makedepends="bash linux-dev"
+install=""
+subpackages=""
+source="https://www.landley.net/toybox/downloads/$pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	export LDFLAGS="--static"
+	export HOSTCC="$CC"
+	export CPUS="${JOBS}"
+	make defconfig
+	make V=1
+}
+
+check() {
+	make test
+}
+
+package() {
+	mkdir -p $pkgdir/usr/bin
+	install -m755 $builddir/generated/unstripped/toybox "$pkgdir"/usr/bin/toybox
+}
+
+sha512sums="345eb38037798d68f6b65e47c5fe1b787e265e83890639773bd2625262d17e4643de870235bc3f114c0eb32593df8a14c1908eda1bc9d9503524c3d4deab8534  toybox-0.8.2.tar.gz"
