@@ -1,0 +1,15 @@
+image: registry.gitlab.com/abyssos/abyss-docker/abyss:dev
+
+variables:
+  GIT_STRATEGY: clone
+  GIT_DEPTH: 0
+
+build-mr:
+  only: [merge_requests]
+  script:
+  - "apk add git"
+  - "git fetch \"${CI_MERGE_REQUEST_PROJECT_URL}\" \"${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}\""
+  - "for PKG in $(git log FETCH_HEAD..\"origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}\" --format=format: --name-only | grep -e \'APKBUILD$\' | tac); do cd \"$CI_PROJECT_DIR/${PKG%APKBUILD}\" && abuild -P \"$CI_PROJECT_DIR/packages\" -r; done"
+  artifacts:
+    paths:
+      - packages
