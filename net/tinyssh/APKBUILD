@@ -1,0 +1,47 @@
+# Maintainer: Haelwenn (lanodan) Monnier <contact+abyss@hacktivis.me>
+# TODO: OpenRC service via ucspi-tcp6 or similar
+# TODO: Use libsodium
+pkgname=tinyssh
+pkgver=20190101
+pkgrel=0
+pkgdesc="small SSH server with state-of-the-art cryptography"
+url="https://tinyssh.org"
+arch="all"
+license="CC0-1.0"
+options="!check"
+subpackages="$pkgname-doc"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/janmojzis/tinyssh/archive/$pkgver.tar.gz
+	$pkgname-musl_fix_login.patch
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+
+	# Make implicit function declaration fail, see
+	# https://github.com/janmojzis/tinyssh/pull/47
+	export CFLAGS="$CFLAGS -Werror=implicit-function-declaration"
+
+	# Use make-tinysshcc.sh script, which has no tests and doesn't execute
+	# binaries. See https://github.com/janmojzis/tinyssh/issues/2
+	./make-tinysshcc.sh
+}
+
+package() {
+	cd "$builddir/build/bin"
+	for i in tinyssh*; do
+		install -m755 -D $i $pkgdir/usr/bin/$i
+	done
+
+	cd "$builddir/man"
+	for i in *.1; do
+		install -m644 -D $i $pkgdir/usr/share/man/man1/$i
+	done
+	for i in *.8; do
+		install -m644 -D $i $pkgdir/usr/share/man/man8/$i
+	done
+}
+
+sha512sums="bf3829a71c29e8b0d5c2a145be9dfaf05efb1b98932f34f19f76e07871da4be10022bdde4c57ca49557b69931077b451bc2efbeab38d8ef24151fb73990f1012  tinyssh-20190101.tar.gz
+e16faba7f7e9d1f20a0b5b48be36ec651051812070708e89294f03f32e2e6858e424760c5d8135245fd9c7c423180688ab357914dc2b53d03bd1b80da5831499  tinyssh-musl_fix_login.patch"
