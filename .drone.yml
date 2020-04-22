@@ -1,0 +1,51 @@
+---
+kind: pipeline
+name: x86_64
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: build
+    image: abyssos/abyss:dev
+    commands:
+      - ./.scripts/drone.sh
+    environment:
+      GH_TOKEN:
+        from_secret: github_token
+      MC_HOST_master:
+        from_secret: MC_HOST_master
+      ABYSS_KEYBASE:
+        from_secret: ABYSS_KEYBASE
+      ABYSS_PRIVKEY:
+        from_secret: ABYSS_PRIVKEY
+      ABYSS_PUBKEY:
+        from_secret: ABYSS_PUBKEY
+    pull: always
+
+---
+kind: pipeline
+name: aarch64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+  - name: build
+    image: abyssos/abyss:dev
+    commands:
+      - ./.scripts/drone.sh
+    environment:
+      GH_TOKEN:
+        from_secret: github_token
+      MC_HOST_master:
+        from_secret: MC_HOST_master
+      ABYSS_KEYBASE:
+        from_secret: ABYSS_KEYBASE
+      ABYSS_PRIVKEY:
+        from_secret: ABYSS_PRIVKEY
+      ABYSS_PUBKEY:
+        from_secret: ABYSS_PUBKEY
+    pull: always
