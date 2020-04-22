@@ -1,6 +1,6 @@
 # Maintainer: Haelwenn (lanodan) Monnier <contact+abyss@hacktivis.me>
 pkgname=mksh
-pkgver=57
+pkgver=58
 _pkgver=R$pkgver
 pkgrel=0
 pkgdesc="MirBSD Korn Shell"
@@ -16,15 +16,6 @@ install=""
 subpackages="$pkgname-doc"
 source="http://www.mirbsd.org/MirOS/dist/mir/mksh/$pkgname-$_pkgver.tgz"
 builddir="$srcdir/$pkgname"
-
-prepare() {
-	default_prepare
-
-	cd "$buildir"
-
-	# Broken testcase when ran as root
-	sed -i check.t -e '/^name: xxx-stat-1$/,/^---$/d'
-}
 
 build() {
 	cd "$buildir"
